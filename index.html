@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#3d2b1f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mais Cacau">
+<title>Mais Inteligência Mais Cacau</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--brown-dark:#2c1a0e;--brown-mid:#3d2b1f;--brown-warm:#6b3f26;--gold:#c8922a;--gold-light:#e8b84b;--cream:#f5ead8;--cream-light:#fdf6ec;--green-dark:#1a3a1a;--green:#2e6b2e;--text-dark:#1a0e08;--text-mid:#4a3728;--text-light:#8a6a5a;--white:#fff;--danger:#c0392b;--success:#27ae60;--shadow:0 4px 24px rgba(44,26,14,.15);--shadow-lg:0 8px 40px rgba(44,26,14,.25);--radius:14px;--radius-sm:8px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--cream-light);color:var(--text-dark);min-height:100vh;overflow-x:hidden}
+
+/* LOGIN */
+#screenLogin{position:fixed;inset:0;z-index:2000;background:linear-gradient(160deg,var(--brown-dark) 0%,var(--brown-warm) 60%,var(--gold) 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem}
+#screenFirstAccess{position:fixed;inset:0;z-index:1900;background:linear-gradient(160deg,var(--brown-dark),var(--brown-warm));display:none;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem}
+.login-box{width:100%;max-width:380px;background:rgba(255,255,255,.08);border:1px solid rgba(200,146,42,.3);border-radius:var(--radius);padding:1.75rem;backdrop-filter:blur(12px)}
+.login-logo{font-size:2.8rem;text-align:center;margin-bottom:.4rem}
+.login-title{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1.3rem;text-align:center;line-height:1.3;margin-bottom:.25rem}
+.login-sub{color:rgba(245,234,216,.6);font-size:.8rem;text-align:center;margin-bottom:1.5rem}
+.login-label{display:block;color:var(--cream);font-size:.82rem;font-weight:500;margin-bottom:.35rem}
+.login-input{width:100%;padding:.72rem 1rem;border:1.5px solid rgba(200,146,42,.3);border-radius:var(--radius-sm);background:rgba(255,255,255,.08);color:var(--cream);font-family:'DM Sans',sans-serif;font-size:.92rem;margin-bottom:.9rem}
+.login-input::placeholder{color:rgba(245,234,216,.4)}
+.login-input:focus{outline:none;border-color:var(--gold-light);background:rgba(255,255,255,.12)}
+.login-btn{width:100%;background:var(--gold);color:var(--brown-dark);border:none;border-radius:var(--radius-sm);padding:.82rem;font-size:1rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.login-btn:hover{background:var(--gold-light)}
+.login-err{color:#ff8080;font-size:.8rem;text-align:center;margin-top:.65rem;min-height:1.1em}
+.user-chips{display:flex;flex-direction:column;gap:.45rem;margin-bottom:.9rem}
+.user-chip{padding:.6rem .9rem;border:1.5px solid rgba(200,146,42,.3);border-radius:var(--radius-sm);color:var(--cream);cursor:pointer;transition:all .2s;font-size:.87rem;display:flex;align-items:center;gap:.55rem;background:rgba(255,255,255,.05)}
+.user-chip:hover,.user-chip.sel{background:rgba(200,146,42,.25);border-color:var(--gold)}
+.role-tag{font-size:.68rem;padding:.13rem .42rem;border-radius:8px;font-weight:700}
+.tag-admin{background:var(--gold);color:var(--brown-dark)}
+.tag-cons{background:rgba(200,146,42,.25);color:var(--gold-light)}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;z-index:1000;background:linear-gradient(160deg,var(--brown-dark) 0%,var(--brown-warm) 60%,var(--gold) 100%);display:none;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem}
+.sp-logo{width:80px;height:80px;background:linear-gradient(135deg,var(--gold-light),var(--gold));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.6rem;margin-bottom:1rem;box-shadow:0 0 0 8px rgba(200,146,42,.2),0 0 0 16px rgba(200,146,42,.1)}
+.sp-title{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1.5rem;text-align:center;line-height:1.3;margin-bottom:.3rem}
+.sp-sub{color:rgba(245,234,216,.65);font-size:.82rem;margin-bottom:.3rem;text-align:center}
+.sp-user{color:var(--gold-light);font-size:.9rem;margin-bottom:1.75rem;font-weight:600}
+.farm-list{width:100%;max-width:420px;display:flex;flex-direction:column;gap:.65rem}
+.farm-card{background:rgba(255,255,255,.1);border:1px solid rgba(200,146,42,.3);border-radius:var(--radius);padding:.9rem 1.1rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.9rem;backdrop-filter:blur(8px)}
+.farm-card:hover,.farm-card:active{background:rgba(200,146,42,.2);transform:translateX(4px)}
+.farm-card-icon{font-size:1.7rem}
+.farm-card-info{flex:1}
+.farm-card-name{color:var(--cream);font-weight:600;font-size:.97rem}
+.farm-card-detail{color:rgba(245,234,216,.6);font-size:.75rem;margin-top:2px}
+.farm-card-arrow{color:var(--gold-light);font-size:1.2rem}
+.btn-new-farm{width:100%;max-width:420px;background:var(--gold);color:var(--brown-dark);border:none;border-radius:var(--radius);padding:.9rem;font-size:.97rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;font-family:'DM Sans',sans-serif;margin-top:.5rem}
+.btn-new-farm:hover{background:var(--gold-light)}
+.sp-logout{color:rgba(245,234,216,.5);font-size:.76rem;cursor:pointer;margin-top:1.25rem;text-decoration:underline}
+
+/* APP */
+#app{display:none;flex-direction:column;min-height:100vh}
+.topbar{background:linear-gradient(135deg,var(--brown-dark),var(--brown-mid));padding:.85rem 1rem;display:flex;align-items:center;gap:.7rem;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.topbar-logo{font-size:1.35rem}
+.topbar-info{flex:1}
+.topbar-title{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:.97rem;line-height:1.2}
+.topbar-farm{color:var(--cream);font-size:.75rem;opacity:.85}
+.topbar-actions{display:flex;gap:.35rem}
+.topbar-btn{background:rgba(200,146,42,.2);border:1px solid rgba(200,146,42,.4);color:var(--gold-light);border-radius:8px;padding:.38rem .65rem;font-size:.73rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap}
+.topbar-btn:hover{background:rgba(200,146,42,.35)}
+
+.nav{background:var(--brown-mid);display:flex;overflow-x:auto;scrollbar-width:none;border-bottom:2px solid var(--brown-warm)}
+.nav::-webkit-scrollbar{display:none}
+.nav-btn{flex:none;padding:.65rem .95rem;background:none;border:none;border-bottom:3px solid transparent;color:rgba(245,234,216,.55);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;white-space:nowrap;transition:all .2s}
+.nav-btn.active{color:var(--gold-light);border-bottom-color:var(--gold)}
+
+.content{flex:1;padding:1.2rem;padding-bottom:2rem}
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.15rem}
+.sec-title{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--brown-dark)}
+
+.card{background:var(--white);border-radius:var(--radius);padding:1.2rem;box-shadow:var(--shadow);margin-bottom:1rem;border:1px solid rgba(200,146,42,.1)}
+.card-title{font-weight:600;color:var(--brown-dark);font-size:.93rem}
+.card-sub{font-size:.76rem;color:var(--text-light);margin-top:2px}
+
+.form-group{margin-bottom:.9rem}
+.form-label{display:block;font-size:.8rem;font-weight:500;color:var(--text-mid);margin-bottom:.35rem}
+.form-input,.form-select,.form-textarea{width:100%;padding:.72rem .95rem;border:1.5px solid #e2d5c3;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:.9rem;background:var(--cream-light);color:var(--text-dark);transition:border-color .2s,box-shadow .2s;appearance:none}
+.form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,146,42,.12);background:var(--white)}
+.form-textarea{resize:vertical;min-height:78px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+
+.btn{padding:.7rem 1.1rem;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem}
+.btn-primary{background:var(--gold);color:var(--white)}
+.btn-primary:hover{background:var(--gold-light)}
+.btn-secondary{background:var(--cream);color:var(--brown-mid);border:1.5px solid #d4c0a4}
+.btn-secondary:hover{background:#ecddc8}
+.btn-danger{background:var(--danger);color:var(--white)}
+.btn-success{background:var(--success);color:var(--white)}
+.btn-full{width:100%;justify-content:center}
+.btn-sm{padding:.38rem .72rem;font-size:.76rem}
+
+.modal-overlay{position:fixed;inset:0;z-index:1500;background:rgba(44,26,14,.6);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--white);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:600px;max-height:92vh;overflow-y:auto;padding:1.4rem;transform:translateY(100%);transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-handle{width:38px;height:4px;background:#e2d5c3;border-radius:2px;margin:0 auto 1.1rem}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--brown-dark);margin-bottom:1.15rem}
+
+.list-item{background:var(--white);border:1px solid rgba(200,146,42,.15);border-radius:var(--radius-sm);padding:.85rem .95rem;margin-bottom:.55rem;display:flex;align-items:center;gap:.7rem}
+.list-item-icon{font-size:1.45rem;flex-shrink:0}
+.list-item-info{flex:1}
+.list-item-title{font-weight:600;font-size:.9rem;color:var(--brown-dark)}
+.list-item-sub{font-size:.73rem;color:var(--text-light);margin-top:2px}
+.list-item-actions{display:flex;gap:.35rem;flex-shrink:0}
+
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.15rem}
+.stat-card{background:var(--white);border-radius:var(--radius-sm);padding:.9rem;box-shadow:var(--shadow);border:1px solid rgba(200,146,42,.15);border-left:4px solid var(--gold)}
+.stat-card.green{border-left-color:var(--success)}
+.stat-card.red{border-left-color:var(--danger)}
+.stat-card.blue{border-left-color:#2980b9}
+.stat-label{font-size:.7rem;color:var(--text-light);font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.stat-value{font-size:1.25rem;font-weight:700;color:var(--brown-dark);margin-top:.15rem}
+
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--text-light)}
+.empty-icon{font-size:2.8rem;margin-bottom:.65rem}
+.empty-text{font-size:.88rem}
+
+.calc-display{background:linear-gradient(135deg,var(--green-dark),var(--green));border-radius:var(--radius-sm);padding:.9rem 1.1rem;margin-top:.65rem;color:var(--white);display:flex;align-items:center;justify-content:space-between}
+.calc-label{font-size:.78rem;opacity:.85}
+.calc-value{font-size:1.35rem;font-weight:700}
+.calc-unit{font-size:.72rem;opacity:.8}
+
+.scroll-x{overflow-x:auto;scrollbar-width:thin}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+th{background:var(--brown-mid);color:var(--cream);padding:.55rem .7rem;text-align:left;white-space:nowrap}
+td{padding:.5rem .7rem;border-bottom:1px solid #f0e4d4;color:var(--text-dark)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fdf0e0}
+.text-green{color:var(--success);font-weight:600}
+.text-red{color:var(--danger);font-weight:600}
+.text-gold{color:var(--gold);font-weight:600}
+
+.admin-banner{background:linear-gradient(135deg,#1a0a50,#3a1a8a);color:white;border-radius:var(--radius-sm);padding:.7rem .95rem;margin-bottom:1rem;display:flex;align-items:center;gap:.7rem;font-size:.83rem}
+.user-row{display:flex;align-items:center;gap:.7rem;padding:.85rem .95rem;background:var(--white);border:1px solid rgba(200,146,42,.15);border-radius:var(--radius-sm);margin-bottom:.45rem}
+.user-row-name{font-weight:600;font-size:.9rem;color:var(--brown-dark)}
+.user-row-detail{font-size:.73rem;color:var(--text-light)}
+.badge{display:inline-block;font-size:.67rem;padding:.12rem .42rem;border-radius:7px;font-weight:600;margin-left:.35rem}
+.badge-admin{background:#e8d5ff;color:#5a1a9a}
+.badge-active{background:#d5f5e3;color:#1a7a3a}
+.badge-pending{background:#fde8cc;color:#8a4a00}
+
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--brown-dark);color:var(--cream);padding:.7rem 1.4rem;border-radius:24px;font-size:.86rem;z-index:3000;box-shadow:var(--shadow-lg);transition:transform .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{background:var(--success)}
+.toast.error{background:var(--danger)}
+
+.page{display:none}
+.page.active{display:block}
+
+@media(max-width:380px){.form-row{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ═══ SCREEN: LOGIN ═══ -->
+<div id="screenLogin">
+  <div class="login-box">
+    <div class="login-logo">🍫</div>
+    <div class="login-title">Mais Inteligência<br>Mais Cacau</div>
+    <div class="login-sub">Faça login para continuar</div>
+
+    <div id="stepUser">
+      <label class="login-label">Selecione seu usuário</label>
+      <div class="user-chips" id="userChipList"></div>
+      <button class="login-btn" onclick="goToPassword()">Continuar →</button>
+      <div class="login-err" id="err1"></div>
+    </div>
+
+    <div id="stepPwd" style="display:none">
+      <div style="display:flex;align-items:center;gap:.55rem;margin-bottom:1.1rem">
+        <button onclick="backToUsers()" style="background:rgba(200,146,42,.2);border:1px solid rgba(200,146,42,.3);color:var(--gold-light);border-radius:8px;padding:.32rem .6rem;cursor:pointer;font-size:.82rem">←</button>
+        <div><div style="color:var(--cream);font-weight:600;font-size:.93rem" id="pwdLabel">—</div><div style="color:rgba(245,234,216,.55);font-size:.73rem" id="pwdRole">—</div></div>
+      </div>
+      <label class="login-label">Senha</label>
+      <input class="login-input" type="password" id="inputPwd" placeholder="Digite sua senha" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="login-btn" onclick="doLogin()">Entrar 🔐</button>
+      <div class="login-err" id="err2"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN: FIRST ACCESS ═══ -->
+<div id="screenFirstAccess">
+  <div class="login-box">
+    <div class="login-logo">🔑</div>
+    <div class="login-title" style="font-size:1.15rem">Primeiro Acesso</div>
+    <div class="login-sub" id="firstSub">Crie sua senha pessoal</div>
+    <label class="login-label">Nova Senha (mín. 6 caracteres)</label>
+    <input class="login-input" type="password" id="newPwd1" placeholder="Crie uma senha">
+    <label class="login-label">Confirme a Senha</label>
+    <input class="login-input" type="password" id="newPwd2" placeholder="Repita a senha" onkeydown="if(event.key==='Enter')setFirstPwd()">
+    <button class="login-btn" onclick="setFirstPwd()">Criar Senha e Entrar ✅</button>
+    <div class="login-err" id="firstErr"></div>
+  </div>
+</div>
+
+<!-- ═══ SPLASH / FARM SELECT ═══ -->
+<div id="splash">
+  <div class="sp-logo">🍫</div>
+  <div class="sp-title">Mais Inteligência<br>Mais Cacau</div>
+  <div class="sp-sub">Bem-vindo(a),</div>
+  <div class="sp-user" id="splashUser"></div>
+  <div class="farm-list" id="farmList"></div>
+  <button class="btn-new-farm" onclick="openModal('modalFarm')">➕ Cadastrar Nova Fazenda</button>
+  <div class="sp-logout" onclick="doLogout()">↩ Sair / Trocar usuário</div>
+</div>
+
+<!-- ═══ MAIN APP ═══ -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo">🍫</div>
+    <div class="topbar-info">
+      <div class="topbar-title">Mais Inteligência Mais Cacau</div>
+      <div class="topbar-farm" id="topbarFarm">—</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="topbar-btn" onclick="backToSplash()">↩ Fazendas</button>
+      <button class="topbar-btn" onclick="doLogout()">🚪 Sair</button>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="nav-btn active" onclick="showPage('pgFazenda')" data-page="pgFazenda">🏡 Fazenda</button>
+    <button class="nav-btn" onclick="showPage('pgTalhoes')" data-page="pgTalhoes">🌿 Talhões</button>
+    <button class="nav-btn" onclick="showPage('pgProducao')" data-page="pgProducao">📦 Produção</button>
+    <button class="nav-btn" onclick="showPage('pgReceitas')" data-page="pgReceitas">💰 Receitas</button>
+    <button class="nav-btn" onclick="showPage('pgDespesas')" data-page="pgDespesas">📋 Despesas</button>
+    <button class="nav-btn" onclick="showPage('pgExport')" data-page="pgExport">📤 Exportar</button>
+    <button class="nav-btn" id="navAdmin" style="display:none" onclick="showPage('pgAdmin')" data-page="pgAdmin">⚙️ Admin</button>
+  </div>
+
+  <div class="content">
+    <!-- FAZENDA -->
+    <div class="page active" id="pgFazenda">
+      <div class="sec-header"><div class="sec-title">🏡 Dados da Fazenda</div><button class="btn btn-primary btn-sm" onclick="editCurrentFarm()">✏️ Editar</button></div>
+      <div id="farmDetailCard"></div>
+    </div>
+    <!-- TALHÕES -->
+    <div class="page" id="pgTalhoes">
+      <div class="sec-header"><div class="sec-title">🌿 Talhões</div><button class="btn btn-primary btn-sm" onclick="openModal('modalTalhao')">➕ Novo</button></div>
+      <div id="talhoesList"></div>
+    </div>
+    <!-- PRODUÇÃO -->
+    <div class="page" id="pgProducao">
+      <div class="sec-header"><div class="sec-title">📦 Produção</div><button class="btn btn-primary btn-sm" onclick="openModal('modalProducao')">➕ Novo</button></div>
+      <div id="producaoList"></div>
+    </div>
+    <!-- RECEITAS -->
+    <div class="page" id="pgReceitas">
+      <div class="sec-header"><div class="sec-title">💰 Receitas</div><button class="btn btn-primary btn-sm" onclick="openModal('modalReceita')">➕ Nova</button></div>
+      <div id="receitasList"></div>
+    </div>
+    <!-- DESPESAS -->
+    <div class="page" id="pgDespesas">
+      <div class="sec-header"><div class="sec-title">📋 Despesas</div><button class="btn btn-primary btn-sm" onclick="openModal('modalDespesa')">➕ Nova</button></div>
+      <div id="despesasList"></div>
+    </div>
+    <!-- EXPORTAR -->
+    <div class="page" id="pgExport">
+      <div class="sec-title" style="margin-bottom:1.15rem">📤 Exportar Dados</div>
+      <div class="card">
+        <div class="card-title">📊 Fazenda Atual</div>
+        <div class="card-sub" id="expFarmName">—</div>
+        <p style="font-size:.83rem;color:var(--text-light);margin:.7rem 0 .9rem">Exporta todos os dados da fazenda selecionada.</p>
+        <button class="btn btn-success btn-full" onclick="exportFarm('current')">📥 Baixar Excel — Fazenda Atual</button>
+      </div>
+      <div class="card">
+        <div class="card-title">🌎 Todas as Fazendas</div>
+        <div class="card-sub" id="expAllScope">—</div>
+        <p style="font-size:.83rem;color:var(--text-light);margin:.7rem 0 .9rem">Exporta dados de todas as fazendas visíveis.</p>
+        <button class="btn btn-primary btn-full" onclick="exportFarm('all')">📥 Baixar Excel — Todas as Fazendas</button>
+      </div>
+      <div class="card"><div class="card-title" style="margin-bottom:.7rem">📋 Resumo</div><div id="expSummary"></div></div>
+    </div>
+    <!-- ADMIN -->
+    <div class="page" id="pgAdmin">
+      <div class="admin-banner"><span style="font-size:1.35rem">⚙️</span><div><div style="font-weight:700">Painel do Administrador</div><div style="opacity:.75;font-size:.76rem">Gerencie consultores e visualize todos os dados</div></div></div>
+      <div class="sec-title" style="margin-bottom:.9rem">👥 Consultores</div>
+      <div id="adminUserList"></div>
+      <div style="margin-top:1.4rem"><div class="sec-title" style="margin-bottom:.9rem">📊 Resumo por Consultor</div><div id="adminSummary"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- FAZENDA -->
+<div class="modal-overlay" id="modalFarm">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="mFarmTitle">🏡 Nova Fazenda / Produtor</div>
+    <div class="form-group"><label class="form-label">Nome do Produtor *</label><input class="form-input" id="fProdutor" placeholder="Ex: João da Silva"></div>
+    <div class="form-group"><label class="form-label">Nome da Fazenda *</label><input class="form-input" id="fFazenda" placeholder="Ex: Fazenda Santa Maria"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Município</label><input class="form-input" id="fMunicipio" placeholder="Ex: Ilhéus"></div>
+      <div class="form-group"><label class="form-label">Estado</label><input class="form-input" id="fEstado" placeholder="Ex: BA"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Área Total (ha)</label><input class="form-input" id="fArea" type="number" placeholder="0.00"></div>
+      <div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="fTelefone" placeholder="(00) 00000-0000"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Observações</label><textarea class="form-textarea" id="fObs" placeholder="Informações adicionais..."></textarea></div>
+    <input type="hidden" id="fEditId">
+    <div style="display:flex;gap:.7rem;margin-top:.4rem">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modalFarm')">Cancelar</button>
+      <button class="btn btn-primary" style="flex:2" onclick="saveFarm()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TALHÃO -->
+<div class="modal-overlay" id="modalTalhao">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="mTalhaoTitle">🌿 Novo Talhão</div>
+    <div class="form-group"><label class="form-label">Nome do Talhão *</label><input class="form-input" id="tNome" placeholder="Ex: Talhão A, Quadra 1..."></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Área (ha) *</label><input class="form-input" id="tArea" type="number" step="0.01" placeholder="0.00"></div>
+      <div class="form-group"><label class="form-label">Safra *</label><input class="form-input" id="tSafra" placeholder="Ex: 2024/2025"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Variedade</label><input class="form-input" id="tVariedade" placeholder="Ex: Forasteiro"></div>
+      <div class="form-group"><label class="form-label">Ano de Plantio</label><input class="form-input" id="tAnoPlantio" type="number" placeholder="Ex: 2018"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Observações</label><input class="form-input" id="tObs" placeholder="Observações opcionais"></div>
+    <input type="hidden" id="tEditId">
+    <div style="display:flex;gap:.7rem;margin-top:.4rem">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modalTalhao')">Cancelar</button>
+      <button class="btn btn-primary" style="flex:2" onclick="saveTalhao()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUÇÃO -->
+<div class="modal-overlay" id="modalProducao">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📦 Registro de Produção</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Data (MM/AAAA) *</label><input class="form-input" id="pData" placeholder="MM/AAAA" maxlength="7" oninput="fmtMY(this)"></div>
+      <div class="form-group"><label class="form-label">Safra</label><input class="form-input" id="pSafra" placeholder="Ex: 2024/2025"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Talhão *</label><select class="form-select" id="pTalhao" onchange="calcProd()"><option value="">Selecione...</option><option value="TOTAL">📊 Área Total da Fazenda</option></select></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Produção *</label><input class="form-input" id="pProducao" type="number" step="0.01" placeholder="0.00" oninput="calcProd()"></div>
+      <div class="form-group"><label class="form-label">Unidade</label><select class="form-select" id="pUnidade" onchange="calcProd()"><option value="kg">kg</option><option value="sc">Sacas (60kg)</option><option value="t">Toneladas</option><option value="arrobas">Arrobas</option></select></div>
+    </div>
+    <div id="prodCalcDisp" style="display:none"><div class="calc-display"><div><div class="calc-label">🌱 Produtividade</div><div class="calc-unit">Produção ÷ Área</div></div><div style="text-align:right"><div class="calc-value" id="calcProdVal">—</div><div class="calc-unit">kg/ha</div></div></div></div>
+    <div class="form-group" style="margin-top:.65rem"><label class="form-label">Observações</label><input class="form-input" id="pObs" placeholder="Observações opcionais"></div>
+    <input type="hidden" id="pEditId">
+    <div style="display:flex;gap:.7rem;margin-top:.4rem">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modalProducao')">Cancelar</button>
+      <button class="btn btn-primary" style="flex:2" onclick="saveProducao()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- RECEITA -->
+<div class="modal-overlay" id="modalReceita">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">💰 Registrar Receita</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Data (MM/AAAA) *</label><input class="form-input" id="rData" placeholder="MM/AAAA" maxlength="7" oninput="fmtMY(this);calcReceita()"></div>
+      <div class="form-group"><label class="form-label">Safra</label><input class="form-input" id="rSafra" placeholder="Ex: 2024/2025"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Produto / Descrição</label><input class="form-input" id="rProduto" placeholder="Ex: Amêndoas de cacau seco"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Quantidade Vendida *</label><input class="form-input" id="rQtd" type="number" step="0.01" placeholder="0.00" oninput="calcReceita()"></div>
+      <div class="form-group"><label class="form-label">Unidade</label><select class="form-select" id="rUnidade" onchange="calcReceita()"><option value="kg">kg</option><option value="sc">Sacas (60kg)</option><option value="t">Toneladas</option><option value="arrobas">Arrobas</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Valor de Venda (R$/unidade) *</label><input class="form-input" id="rValorUnit" type="number" step="0.01" placeholder="0.00" oninput="calcReceita()"></div>
+    <div id="recCalcDisp" style="display:none"><div class="calc-display"><div><div class="calc-label">💵 Renda Bruta</div><div class="calc-unit">Quantidade × Valor Unitário</div></div><div style="text-align:right"><div class="calc-value" id="calcRendaVal">—</div><div class="calc-unit">R$</div></div></div></div>
+    <div class="form-group" style="margin-top:.65rem"><label class="form-label">Observações</label><input class="form-input" id="rObs" placeholder="Observações opcionais"></div>
+    <input type="hidden" id="rEditId">
+    <div style="display:flex;gap:.7rem;margin-top:.4rem">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modalReceita')">Cancelar</button>
+      <button class="btn btn-primary" style="flex:2" onclick="saveReceita()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- DESPESA -->
+<div class="modal-overlay" id="modalDespesa">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📋 Registrar Despesa</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Data (MM/AAAA) *</label><input class="form-input" id="dData" placeholder="MM/AAAA" maxlength="7" oninput="fmtMY(this)"></div>
+      <div class="form-group"><label class="form-label">Safra</label><input class="form-input" id="dSafra" placeholder="Ex: 2024/2025"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Talhão *</label><select class="form-select" id="dTalhao"><option value="">Selecione...</option><option value="TOTAL">📊 Área Total da Fazenda</option></select></div>
+    <div class="form-group"><label class="form-label">Atividade *</label>
+      <select class="form-select" id="dAtividade"><option value="">Selecione...</option><option>Administração</option><option>Adubação via Solo</option><option>Adubação via Folha</option><option>Colheita</option><option>Condução de Lavoura</option><option>Controle de Pragas e Doenças</option><option>Controle de Plantas Daninhas</option><option>Irrigação</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Elemento de Despesa *</label>
+      <select class="form-select" id="dElemento" onchange="toggleOutros()">
+        <option value="">Selecione...</option>
+        <optgroup label="🔋 Energia e Utilidades"><option>Energia Elétrica</option><option>Internet</option><option>Gasolina</option><option>Diesel</option><option>Lubrificantes</option><option>Gás</option></optgroup>
+        <optgroup label="👷 Mão de Obra"><option>Mão de Obra Fixa</option><option>Mão de Obra Contratada</option><option>Mão de Obra Meeiro</option><option>Mão de Obra Familiar</option><option>Encargos Sociais</option><option>EPI e Segurança</option></optgroup>
+        <optgroup label="🌱 Fertilizantes"><option>Fertilizante Formulado</option><option>Fertilizante Organomineral</option><option>Fertilizante Orgânico</option><option>Fertilizante Nitrogenado</option><option>Fertilizante Potássico</option><option>Fertilizante Fosfatado</option><option>Micronutrientes</option><option>Corretivos de Acidez</option></optgroup>
+        <optgroup label="🐛 Defensivos"><option>Inseticida</option><option>Fungicida</option><option>Acaricida</option><option>Bioinsumos</option><option>Herbicida</option><option>Espalhante Adesivo</option></optgroup>
+        <optgroup label="🔧 Equipamentos"><option>Manutenção de Equipamentos</option><option>Ferramentas e Utensílios</option><option>Embalagens</option><option>Transporte</option><option>Armazenamento</option></optgroup>
+        <optgroup label="📄 Administrativo"><option>Assistência Técnica</option><option>Certificações</option><option>Impostos e Taxas</option><option>Seguros</option></optgroup>
+        <option value="Outros">➕ Outros</option>
+      </select>
+    </div>
+    <div id="dOutrosGroup" style="display:none" class="form-group"><label class="form-label">Especificar "Outros"</label><input class="form-input" id="dOutros" placeholder="Descreva o elemento de despesa"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Quantidade</label><input class="form-input" id="dQtd" type="number" step="0.01" placeholder="0.00"></div>
+      <div class="form-group"><label class="form-label">Unidade</label><input class="form-input" id="dUnidadeD" placeholder="Ex: kg, L, sc, h"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Valor Total (R$) *</label><input class="form-input" id="dValor" type="number" step="0.01" placeholder="0.00"></div>
+    <div class="form-group"><label class="form-label">Observações</label><input class="form-input" id="dObs" placeholder="Observações opcionais"></div>
+    <input type="hidden" id="dEditId">
+    <div style="display:flex;gap:.7rem;margin-top:.4rem">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modalDespesa')">Cancelar</button>
+      <button class="btn btn-primary" style="flex:2" onclick="saveDespesa()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESET SENHA (admin) -->
+<div class="modal-overlay" id="modalResetPwd">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🔑 Redefinir Senha</div>
+    <div class="form-group"><label class="form-label">Usuário</label><input class="form-input" id="rstLabel" disabled></div>
+    <div class="form-group"><label class="form-label">Nova Senha (mín. 6 caracteres)</label><input class="form-input" type="password" id="rstPwd1" placeholder="Nova senha"></div>
+    <div class="form-group"><label class="form-label">Confirmar Nova Senha</label><input class="form-input" type="password" id="rstPwd2" placeholder="Repita a senha"></div>
+    <div class="login-err" id="rstErr" style="text-align:left;margin-bottom:.7rem"></div>
+    <input type="hidden" id="rstUid">
+    <div style="display:flex;gap:.7rem">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modalResetPwd')">Cancelar</button>
+      <button class="btn btn-primary" style="flex:2" onclick="doResetPwd()">💾 Redefinir</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════
+const USERS_KEY='mimc_users_v1', DB_KEY='mimc_data_v2';
+
+const DEFAULT_USERS=[
+  {id:'admin',      name:'LABOR RURAL',      role:'admin',     pwdHash:null,firstAccess:true},
+  {id:'consultor1', name:'Alex Santos',       role:'consultor', pwdHash:null,firstAccess:true},
+  {id:'consultor2', name:'Bruna Morais',      role:'consultor', pwdHash:null,firstAccess:true},
+  {id:'consultor3', name:'Wanny Barbosa',     role:'consultor', pwdHash:null,firstAccess:true},
+  {id:'consultor4', name:'Wellington Varela', role:'consultor', pwdHash:null,firstAccess:true},
+];
+
+function sh(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h)+s.charCodeAt(i);return(h>>>0).toString(36);}
+function loadUsers(){try{return JSON.parse(localStorage.getItem(USERS_KEY))||JSON.parse(JSON.stringify(DEFAULT_USERS));}catch{return JSON.parse(JSON.stringify(DEFAULT_USERS));}}
+function saveUsers(u){localStorage.setItem(USERS_KEY,JSON.stringify(u));}
+function loadDB(){try{return JSON.parse(localStorage.getItem(DB_KEY))||{farms:[],talhoes:[],producao:[],receitas:[],despesas:[]};}catch{return{farms:[],talhoes:[],producao:[],receitas:[],despesas:[]};}}
+function saveDB(d){localStorage.setItem(DB_KEY,JSON.stringify(d));}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+
+let users=loadUsers(), db=loadDB(), CU=null, CFid=null, selUid=null;
+
+// ═══════════════════════════════════════
+// SCREEN MANAGER
+// ═══════════════════════════════════════
+function showScreen(id){
+  ['screenLogin','screenFirstAccess','splash','app'].forEach(s=>{
+    const el=document.getElementById(s);
+    el.style.display=(s===id)?'flex':'none';
+  });
+}
+
+// ═══════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════
+function renderChips(){
+  document.getElementById('userChipList').innerHTML=users.map(u=>`
+    <div class="user-chip${selUid===u.id?' sel':''}" onclick="pickUser('${u.id}')">
+      <span>${u.role==='admin'?'👑':'👤'}</span>
+      <span style="flex:1">${u.name}</span>
+      <span class="role-tag ${u.role==='admin'?'tag-admin':'tag-cons'}">${u.role==='admin'?'ADMIN':'CONSULTOR'}</span>
+    </div>`).join('');
+}
+function pickUser(id){selUid=id;renderChips();}
+function goToPassword(){
+  if(!selUid){document.getElementById('err1').textContent='Selecione um usuário.';return;}
+  const u=users.find(x=>x.id===selUid);
+  document.getElementById('pwdLabel').textContent=u.name;
+  document.getElementById('pwdRole').textContent=u.role==='admin'?'Administrador':'Consultor';
+  document.getElementById('stepUser').style.display='none';
+  document.getElementById('stepPwd').style.display='';
+  document.getElementById('inputPwd').value='';
+  document.getElementById('err2').textContent='';
+  setTimeout(()=>document.getElementById('inputPwd').focus(),200);
+}
+function backToUsers(){document.getElementById('stepPwd').style.display='none';document.getElementById('stepUser').style.display='';}
+function doLogin(){
+  const u=users.find(x=>x.id===selUid);
+  const pwd=document.getElementById('inputPwd').value;
+  if(!pwd){document.getElementById('err2').textContent='Digite sua senha.';return;}
+  if(u.firstAccess||!u.pwdHash){
+    document.getElementById('firstSub').textContent=`Olá, ${u.name}! Crie sua senha pessoal de acesso.`;
+    document.getElementById('newPwd1').value='';document.getElementById('newPwd2').value='';document.getElementById('firstErr').textContent='';
+    showScreen('screenFirstAccess');return;
+  }
+  if(sh(pwd)!==u.pwdHash){document.getElementById('err2').textContent='Senha incorreta.';return;}
+  loginOk(u);
+}
+function setFirstPwd(){
+  const p1=document.getElementById('newPwd1').value,p2=document.getElementById('newPwd2').value,err=document.getElementById('firstErr');
+  if(p1.length<6){err.textContent='Mínimo 6 caracteres.';return;}
+  if(p1!==p2){err.textContent='As senhas não coincidem.';return;}
+  const u=users.find(x=>x.id===selUid);
+  u.pwdHash=sh(p1);u.firstAccess=false;saveUsers(users);
+  showToast('✅ Senha criada!','success');loginOk(u);
+}
+function loginOk(u){
+  CU=u;
+  document.getElementById('navAdmin').style.display=u.role==='admin'?'':'none';
+  document.getElementById('splashUser').textContent=(u.role==='admin'?'👑 ':'👤 ')+u.name;
+  showScreen('splash');renderFarmList();
+}
+function doLogout(){
+  CU=null;CFid=null;selUid=null;
+  document.getElementById('stepUser').style.display='';document.getElementById('stepPwd').style.display='none';
+  document.getElementById('err1').textContent='';document.getElementById('err2').textContent='';
+  renderChips();showScreen('screenLogin');
+}
+
+// ═══════════════════════════════════════
+// VISIBILITY
+// ═══════════════════════════════════════
+function visFarms(){return CU.role==='admin'?db.farms:db.farms.filter(f=>f.ownerId===CU.id);}
+
+// ═══════════════════════════════════════
+// SPLASH
+// ═══════════════════════════════════════
+function renderFarmList(){
+  const farms=visFarms(),el=document.getElementById('farmList');
+  if(!farms.length){el.innerHTML=`<div style="text-align:center;color:rgba(245,234,216,.6);padding:1rem;font-size:.88rem">Nenhuma fazenda cadastrada.<br>Cadastre abaixo. 👇</div>`;return;}
+  el.innerHTML=farms.map(f=>`
+    <div class="farm-card" onclick="selectFarm('${f.id}')">
+      <div class="farm-card-icon">🏡</div>
+      <div class="farm-card-info"><div class="farm-card-name">${f.fazenda}</div><div class="farm-card-detail">${f.produtor}${f.municipio?' · '+f.municipio:''}${f.estado?'/'+f.estado:''}</div></div>
+      <div class="farm-card-arrow">›</div>
+    </div>`).join('');
+}
+function selectFarm(id){
+  CFid=id;const farm=db.farms.find(f=>f.id===id);
+  document.getElementById('topbarFarm').textContent=farm.fazenda+' — '+farm.produtor;
+  document.getElementById('expFarmName').textContent=farm.fazenda+' — '+farm.produtor;
+  document.getElementById('expAllScope').textContent=CU.role==='admin'?'Todas as fazendas (visão Admin)':'Suas fazendas';
+  showScreen('app');document.getElementById('app').style.display='flex';
+  showPage('pgFazenda');renderFarmDetail();renderTalhoes();renderProducao();renderReceitas();renderDespesas();renderExpSummary();fillTalhaoSelects();
+  if(CU.role==='admin')renderAdmin();
+}
+function backToSplash(){CFid=null;showScreen('splash');renderFarmList();}
+
+// ═══════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════
+function showPage(pid){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(pid).classList.add('active');
+  const b=document.querySelector(`[data-page="${pid}"]`);if(b)b.classList.add('active');
+}
+
+// ═══════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════
+function openModal(id){document.getElementById(id).classList.add('open');if(id==='modalProducao'||id==='modalDespesa')fillTalhaoSelects();}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+function toggleOutros(){document.getElementById('dOutrosGroup').style.display=document.getElementById('dElemento').value==='Outros'?'':'none';}
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+function fmtMY(el){let v=el.value.replace(/\D/g,'');if(v.length>=2)v=v.slice(0,2)+'/'+v.slice(2,6);el.value=v;}
+function fBRL(v){return 'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fNum(v,d=2){return Number(v).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});}
+let _tt;
+function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type||'');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),2600);}
+
+// ═══════════════════════════════════════
+// FAZENDA
+// ═══════════════════════════════════════
+function saveFarm(){
+  const produtor=document.getElementById('fProdutor').value.trim(),fazenda=document.getElementById('fFazenda').value.trim();
+  if(!produtor||!fazenda){showToast('⚠️ Preencha Produtor e Fazenda','error');return;}
+  const eid=document.getElementById('fEditId').value;
+  const farm={id:eid||uid(),ownerId:CU.id,produtor,fazenda,municipio:document.getElementById('fMunicipio').value.trim(),estado:document.getElementById('fEstado').value.trim(),area:parseFloat(document.getElementById('fArea').value)||0,telefone:document.getElementById('fTelefone').value.trim(),obs:document.getElementById('fObs').value.trim(),criadoEm:eid?(db.farms.find(f=>f.id===eid)?.criadoEm||Date.now()):Date.now()};
+  if(eid)db.farms=db.farms.map(f=>f.id===eid?farm:f);else db.farms.push(farm);
+  saveDB(db);closeModal('modalFarm');['fProdutor','fFazenda','fMunicipio','fEstado','fArea','fTelefone','fObs','fEditId'].forEach(id=>document.getElementById(id).value='');
+  if(eid&&CFid===eid){document.getElementById('topbarFarm').textContent=farm.fazenda+' — '+farm.produtor;renderFarmDetail();showToast('✅ Fazenda atualizada!','success');}
+  else if(!eid){renderFarmList();showToast('✅ Fazenda cadastrada!','success');selectFarm(farm.id);}
+  else showToast('✅ Atualizado!','success');
+}
+function editCurrentFarm(){
+  const f=db.farms.find(x=>x.id===CFid);if(!f)return;
+  document.getElementById('mFarmTitle').textContent='✏️ Editar Fazenda';
+  ['fProdutor','fFazenda','fMunicipio','fEstado','fArea','fTelefone','fObs'].forEach(id=>{const k=id.replace('f','').charAt(0).toLowerCase()+id.replace('f','').slice(1);});
+  document.getElementById('fProdutor').value=f.produtor;document.getElementById('fFazenda').value=f.fazenda;
+  document.getElementById('fMunicipio').value=f.municipio||'';document.getElementById('fEstado').value=f.estado||'';
+  document.getElementById('fArea').value=f.area||'';document.getElementById('fTelefone').value=f.telefone||'';
+  document.getElementById('fObs').value=f.obs||'';document.getElementById('fEditId').value=f.id;
+  openModal('modalFarm');
+}
+function renderFarmDetail(){
+  const farm=db.farms.find(f=>f.id===CFid);
+  const el=document.getElementById('farmDetailCard');if(!farm){el.innerHTML='';return;}
+  const tals=db.talhoes.filter(t=>t.farmId===CFid),prods=db.producao.filter(p=>p.farmId===CFid);
+  const recs=db.receitas.filter(r=>r.farmId===CFid),desps=db.despesas.filter(d=>d.farmId===CFid);
+  const tR=recs.reduce((s,r)=>s+r.renda,0),tD=desps.reduce((s,d)=>s+d.valor,0),saldo=tR-tD;
+  const owner=users.find(u=>u.id===farm.ownerId);
+  el.innerHTML=`
+    <div class="card" style="border-left:4px solid var(--gold)">
+      <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.9rem">
+        <div style="font-size:2.3rem">🏡</div>
+        <div><div style="font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--brown-dark)">${farm.fazenda}</div>
+          <div style="color:var(--text-light);font-size:.83rem">👤 ${farm.produtor}</div>
+          ${owner?`<div style="color:var(--text-light);font-size:.73rem">📋 Consultor: ${owner.name}</div>`:''}
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.45rem;font-size:.83rem">
+        ${farm.municipio?`<div>📍 ${farm.municipio}${farm.estado?'/'+farm.estado:''}</div>`:''}
+        ${farm.area?`<div>📐 ${fNum(farm.area)} ha</div>`:''}
+        ${farm.telefone?`<div>📞 ${farm.telefone}</div>`:''}
+      </div>
+      ${farm.obs?`<div style="margin-top:.65rem;font-size:.8rem;color:var(--text-light);border-top:1px solid #f0e4d4;padding-top:.65rem">${farm.obs}</div>`:''}
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">🌿 Talhões</div><div class="stat-value">${tals.length}</div></div>
+      <div class="stat-card blue"><div class="stat-label">📦 Registros Prod.</div><div class="stat-value">${prods.length}</div></div>
+      <div class="stat-card green"><div class="stat-label">💰 Total Receitas</div><div class="stat-value" style="font-size:.97rem">${fBRL(tR)}</div></div>
+      <div class="stat-card red"><div class="stat-label">📋 Total Despesas</div><div class="stat-value" style="font-size:.97rem">${fBRL(tD)}</div></div>
+    </div>
+    <div class="card" style="background:linear-gradient(135deg,${saldo>=0?'var(--green-dark),var(--green)':'#7b1f1f,var(--danger)'});color:white;border:none">
+      <div style="font-size:.78rem;opacity:.85;margin-bottom:.15rem">💵 Saldo (Receita − Despesa)</div>
+      <div style="font-size:1.5rem;font-weight:700">${fBRL(saldo)}</div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════
+// TALHÕES
+// ═══════════════════════════════════════
+function saveTalhao(){
+  const nome=document.getElementById('tNome').value.trim(),area=parseFloat(document.getElementById('tArea').value),safra=document.getElementById('tSafra').value.trim();
+  if(!nome||!area||!safra){showToast('⚠️ Nome, Área e Safra são obrigatórios','error');return;}
+  const eid=document.getElementById('tEditId').value;
+  const t={id:eid||uid(),farmId:CFid,nome,area,safra,variedade:document.getElementById('tVariedade').value.trim(),anoPlantio:document.getElementById('tAnoPlantio').value.trim(),obs:document.getElementById('tObs').value.trim()};
+  if(eid)db.talhoes=db.talhoes.map(x=>x.id===eid?t:x);else db.talhoes.push(t);
+  saveDB(db);closeModal('modalTalhao');['tNome','tArea','tSafra','tVariedade','tAnoPlantio','tObs','tEditId'].forEach(id=>document.getElementById(id).value='');
+  renderTalhoes();renderFarmDetail();fillTalhaoSelects();showToast(eid?'✅ Talhão atualizado!':'✅ Talhão cadastrado!','success');
+}
+function editTalhao(id){
+  const t=db.talhoes.find(x=>x.id===id);if(!t)return;
+  document.getElementById('mTalhaoTitle').textContent='✏️ Editar Talhão';
+  document.getElementById('tNome').value=t.nome;document.getElementById('tArea').value=t.area;document.getElementById('tSafra').value=t.safra;
+  document.getElementById('tVariedade').value=t.variedade||'';document.getElementById('tAnoPlantio').value=t.anoPlantio||'';document.getElementById('tObs').value=t.obs||'';
+  document.getElementById('tEditId').value=t.id;openModal('modalTalhao');
+}
+function deleteTalhao(id){if(!confirm('Remover este talhão?'))return;db.talhoes=db.talhoes.filter(x=>x.id!==id);saveDB(db);renderTalhoes();renderFarmDetail();fillTalhaoSelects();showToast('🗑️ Removido');}
+function renderTalhoes(){
+  const tals=db.talhoes.filter(t=>t.farmId===CFid),el=document.getElementById('talhoesList');
+  if(!tals.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🌱</div><div class="empty-text">Nenhum talhão cadastrado.</div></div>`;return;}
+  el.innerHTML=tals.map(t=>`<div class="list-item"><div class="list-item-icon">🌿</div><div class="list-item-info"><div class="list-item-title">${t.nome}</div><div class="list-item-sub">📐 ${fNum(t.area)} ha · 🗓️ ${t.safra}${t.variedade?' · '+t.variedade:''}</div></div><div class="list-item-actions"><button class="btn btn-secondary btn-sm" onclick="editTalhao('${t.id}')">✏️</button><button class="btn btn-danger btn-sm" onclick="deleteTalhao('${t.id}')">🗑️</button></div></div>`).join('');
+}
+function fillTalhaoSelects(){
+  const tals=db.talhoes.filter(t=>t.farmId===CFid);
+  const opts=`<option value="">Selecione...</option><option value="TOTAL">📊 Área Total da Fazenda</option>`+tals.map(t=>`<option value="${t.id}">${t.nome} (${fNum(t.area)} ha)</option>`).join('');
+  ['pTalhao','dTalhao'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+}
+
+// ═══════════════════════════════════════
+// PRODUÇÃO
+// ═══════════════════════════════════════
+function calcProd(){
+  const tId=document.getElementById('pTalhao').value,val=parseFloat(document.getElementById('pProducao').value)||0,un=document.getElementById('pUnidade').value;
+  const disp=document.getElementById('prodCalcDisp');
+  if(!val||!tId){disp.style.display='none';return;}
+  let kg=val;if(un==='sc')kg=val*60;else if(un==='t')kg=val*1000;else if(un==='arrobas')kg=val*15;
+  let area=null;
+  if(tId==='TOTAL'){const f=db.farms.find(x=>x.id===CFid);area=f?.area||null;}
+  else{const t=db.talhoes.find(x=>x.id===tId);area=t?.area||null;}
+  if(area&&area>0){document.getElementById('calcProdVal').textContent=fNum(kg/area);disp.style.display='';}
+  else disp.style.display='none';
+}
+function saveProducao(){
+  const data=document.getElementById('pData').value.trim(),tId=document.getElementById('pTalhao').value,val=parseFloat(document.getElementById('pProducao').value);
+  if(!data||!tId||!val){showToast('⚠️ Data, Talhão e Produção são obrigatórios','error');return;}
+  const un=document.getElementById('pUnidade').value;
+  let kg=val;if(un==='sc')kg=val*60;else if(un==='t')kg=val*1000;else if(un==='arrobas')kg=val*15;
+  let area=null,tNome='Área Total';
+  if(tId==='TOTAL'){const f=db.farms.find(x=>x.id===CFid);area=f?.area||null;}
+  else{const t=db.talhoes.find(x=>x.id===tId);area=t?.area||null;tNome=t?.nome||'';}
+  const eid=document.getElementById('pEditId').value;
+  const reg={id:eid||uid(),farmId:CFid,data,talhaoId:tId,talhaoNome:tNome,producao:val,unidade:un,producaoKg:kg,area,produtividade:area?kg/area:null,safra:document.getElementById('pSafra').value.trim(),obs:document.getElementById('pObs').value.trim()};
+  if(eid)db.producao=db.producao.map(x=>x.id===eid?reg:x);else db.producao.push(reg);
+  saveDB(db);closeModal('modalProducao');['pData','pSafra','pProducao','pObs','pEditId'].forEach(id=>document.getElementById(id).value='');document.getElementById('pTalhao').value='';document.getElementById('pUnidade').value='kg';document.getElementById('prodCalcDisp').style.display='none';
+  renderProducao();renderFarmDetail();showToast(eid?'✅ Atualizado!':'✅ Registrado!','success');
+}
+function deleteProducao(id){if(!confirm('Remover?'))return;db.producao=db.producao.filter(x=>x.id!==id);saveDB(db);renderProducao();renderFarmDetail();showToast('🗑️ Removido');}
+function renderProducao(){
+  const regs=db.producao.filter(p=>p.farmId===CFid),el=document.getElementById('producaoList');
+  if(!regs.length){el.innerHTML=`<div class="empty"><div class="empty-icon">📦</div><div class="empty-text">Nenhuma produção registrada.</div></div>`;return;}
+  const s=[...regs].sort((a,b)=>b.data.localeCompare(a.data));
+  el.innerHTML=`<div class="scroll-x"><table><thead><tr><th>Data</th><th>Talhão</th><th>Produção</th><th>Área(ha)</th><th>Produtividade</th><th>Safra</th><th></th></tr></thead><tbody>${s.map(p=>`<tr><td>${p.data}</td><td>${p.talhaoNome}</td><td class="text-gold">${fNum(p.producao)} ${p.unidade}</td><td>${p.area?fNum(p.area):'—'}</td><td>${p.produtividade?`<span class="text-green">${fNum(p.produtividade)} kg/ha</span>`:'—'}</td><td>${p.safra||'—'}</td><td><button class="btn btn-danger btn-sm" onclick="deleteProducao('${p.id}')">🗑️</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+
+// ═══════════════════════════════════════
+// RECEITAS
+// ═══════════════════════════════════════
+function calcReceita(){
+  const q=parseFloat(document.getElementById('rQtd').value)||0,v=parseFloat(document.getElementById('rValorUnit').value)||0,d=document.getElementById('recCalcDisp');
+  if(!q||!v){d.style.display='none';return;}
+  document.getElementById('calcRendaVal').textContent=fNum(q*v);d.style.display='';
+}
+function saveReceita(){
+  const data=document.getElementById('rData').value.trim(),qtd=parseFloat(document.getElementById('rQtd').value),vu=parseFloat(document.getElementById('rValorUnit').value);
+  if(!data||!qtd||!vu){showToast('⚠️ Data, Quantidade e Valor são obrigatórios','error');return;}
+  const eid=document.getElementById('rEditId').value;
+  const reg={id:eid||uid(),farmId:CFid,data,qtd,unidade:document.getElementById('rUnidade').value,valorUnit:vu,renda:qtd*vu,produto:document.getElementById('rProduto').value.trim(),safra:document.getElementById('rSafra').value.trim(),obs:document.getElementById('rObs').value.trim()};
+  if(eid)db.receitas=db.receitas.map(x=>x.id===eid?reg:x);else db.receitas.push(reg);
+  saveDB(db);closeModal('modalReceita');['rData','rSafra','rProduto','rQtd','rValorUnit','rObs','rEditId'].forEach(id=>document.getElementById(id).value='');document.getElementById('rUnidade').value='kg';document.getElementById('recCalcDisp').style.display='none';
+  renderReceitas();renderFarmDetail();showToast(eid?'✅ Atualizado!':'✅ Registrado!','success');
+}
+function deleteReceita(id){if(!confirm('Remover?'))return;db.receitas=db.receitas.filter(x=>x.id!==id);saveDB(db);renderReceitas();renderFarmDetail();showToast('🗑️ Removido');}
+function renderReceitas(){
+  const regs=db.receitas.filter(r=>r.farmId===CFid),el=document.getElementById('receitasList');
+  const total=regs.reduce((s,r)=>s+r.renda,0);
+  if(!regs.length){el.innerHTML=`<div class="empty"><div class="empty-icon">💰</div><div class="empty-text">Nenhuma receita registrada.</div></div>`;return;}
+  const s=[...regs].sort((a,b)=>b.data.localeCompare(a.data));
+  el.innerHTML=`<div class="card" style="background:linear-gradient(135deg,var(--green-dark),var(--green));color:white;border:none;margin-bottom:.9rem"><div style="font-size:.78rem;opacity:.8">💵 Total de Receitas</div><div style="font-size:1.45rem;font-weight:700">${fBRL(total)}</div></div><div class="scroll-x"><table><thead><tr><th>Data</th><th>Produto</th><th>Qtd</th><th>Valor Unit.</th><th>Renda</th><th>Safra</th><th></th></tr></thead><tbody>${s.map(r=>`<tr><td>${r.data}</td><td>${r.produto||'—'}</td><td>${fNum(r.qtd)} ${r.unidade}</td><td>${fBRL(r.valorUnit)}</td><td class="text-green">${fBRL(r.renda)}</td><td>${r.safra||'—'}</td><td><button class="btn btn-danger btn-sm" onclick="deleteReceita('${r.id}')">🗑️</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+
+// ═══════════════════════════════════════
+// DESPESAS
+// ═══════════════════════════════════════
+function saveDespesa(){
+  const data=document.getElementById('dData').value.trim(),tId=document.getElementById('dTalhao').value,ativ=document.getElementById('dAtividade').value;
+  let elem=document.getElementById('dElemento').value;if(elem==='Outros')elem=document.getElementById('dOutros').value.trim()||'Outros';
+  const valor=parseFloat(document.getElementById('dValor').value);
+  if(!data||!tId||!ativ||!elem||!valor){showToast('⚠️ Preencha todos os campos obrigatórios','error');return;}
+  let tNome='Área Total';if(tId!=='TOTAL'){const t=db.talhoes.find(x=>x.id===tId);tNome=t?.nome||'';}
+  const eid=document.getElementById('dEditId').value;
+  const reg={id:eid||uid(),farmId:CFid,data,talhaoId:tId,talhaoNome:tNome,atividade:ativ,elemento:elem,valor,qtd:parseFloat(document.getElementById('dQtd').value)||null,unidade:document.getElementById('dUnidadeD').value.trim(),safra:document.getElementById('dSafra').value.trim(),obs:document.getElementById('dObs').value.trim()};
+  if(eid)db.despesas=db.despesas.map(x=>x.id===eid?reg:x);else db.despesas.push(reg);
+  saveDB(db);closeModal('modalDespesa');['dData','dSafra','dQtd','dUnidadeD','dValor','dObs','dEditId','dOutros'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('dTalhao').value='';document.getElementById('dAtividade').value='';document.getElementById('dElemento').value='';document.getElementById('dOutrosGroup').style.display='none';
+  renderDespesas();renderFarmDetail();showToast(eid?'✅ Atualizado!':'✅ Registrado!','success');
+}
+function deleteDespesa(id){if(!confirm('Remover?'))return;db.despesas=db.despesas.filter(x=>x.id!==id);saveDB(db);renderDespesas();renderFarmDetail();showToast('🗑️ Removido');}
+function renderDespesas(){
+  const regs=db.despesas.filter(d=>d.farmId===CFid),el=document.getElementById('despesasList');
+  const total=regs.reduce((s,d)=>s+d.valor,0);
+  if(!regs.length){el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Nenhuma despesa registrada.</div></div>`;return;}
+  const s=[...regs].sort((a,b)=>b.data.localeCompare(a.data));
+  el.innerHTML=`<div class="card" style="background:linear-gradient(135deg,#7b1f1f,var(--danger));color:white;border:none;margin-bottom:.9rem"><div style="font-size:.78rem;opacity:.8">📋 Total de Despesas</div><div style="font-size:1.45rem;font-weight:700">${fBRL(total)}</div></div><div class="scroll-x"><table><thead><tr><th>Data</th><th>Talhão</th><th>Atividade</th><th>Elemento</th><th>Qtd</th><th>Valor</th><th></th></tr></thead><tbody>${s.map(d=>`<tr><td>${d.data}</td><td>${d.talhaoNome}</td><td>${d.atividade}</td><td>${d.elemento}</td><td>${d.qtd?fNum(d.qtd)+' '+(d.unidade||''):'—'}</td><td class="text-red">${fBRL(d.valor)}</td><td><button class="btn btn-danger btn-sm" onclick="deleteDespesa('${d.id}')">🗑️</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+
+// ═══════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════
+function buildSheets(wb,farm){
+  const tals=db.talhoes.filter(t=>t.farmId===farm.id),prods=db.producao.filter(p=>p.farmId===farm.id);
+  const recs=db.receitas.filter(r=>r.farmId===farm.id),desps=db.despesas.filter(d=>d.farmId===farm.id);
+  const owner=users.find(u=>u.id===farm.ownerId);
+  const px=visFarms().length>1?farm.fazenda.slice(0,10)+' - ':'';
+  const tR=recs.reduce((s,r)=>s+r.renda,0),tD=desps.reduce((s,d)=>s+d.valor,0);
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['MAIS INTELIGÊNCIA MAIS CACAU'],[''],['Fazenda:',farm.fazenda],['Produtor:',farm.produtor],['Consultor:',owner?.name||''],['Município:',farm.municipio||''],['Estado:',farm.estado||''],['Área Total (ha):',farm.area||''],['Telefone:',farm.telefone||''],['Observações:',farm.obs||'']]),px+'Fazenda');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Nome','Área (ha)','Safra','Variedade','Ano Plantio','Obs'],...tals.map(t=>[t.nome,t.area,t.safra,t.variedade||'',t.anoPlantio||'',t.obs||''])]),px+'Talhões');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Data','Talhão','Produção','Unidade','Prod.(kg)','Área(ha)','Produtividade(kg/ha)','Safra','Obs'],...prods.map(p=>[p.data,p.talhaoNome,p.producao,p.unidade,p.producaoKg,p.area||'',p.produtividade?parseFloat(p.produtividade.toFixed(2)):'',p.safra||'',p.obs||''])]),px+'Produção');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Data','Produto','Qtd','Unidade','Val.Unit.(R$)','Renda(R$)','Safra','Obs'],...recs.map(r=>[r.data,r.produto||'',r.qtd,r.unidade,r.valorUnit,r.renda,r.safra||'',r.obs||'']),['','','','','TOTAL:',tR]]),px+'Receitas');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Data','Talhão','Atividade','Elemento','Qtd','Unidade','Valor(R$)','Safra','Obs'],...desps.map(d=>[d.data,d.talhaoNome,d.atividade,d.elemento,d.qtd||'',d.unidade||'',d.valor,d.safra||'',d.obs||'']),['','','','','','TOTAL:',tD]]),px+'Despesas');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['RESUMO'],['Fazenda:',farm.fazenda],['Produtor:',farm.produtor],['Consultor:',owner?.name||''],[''],['Item','R$'],['Total Receitas',tR],['Total Despesas',tD],['Saldo',tR-tD],[''],['PRODUTIVIDADE POR TALHÃO'],['Talhão','Prod.Total(kg)','Área(ha)','Produt.(kg/ha)'],...tals.map(t=>{const ps=prods.filter(p=>p.talhaoId===t.id);const kg=ps.reduce((s,p)=>s+(p.producaoKg||0),0);return[t.nome,kg,t.area,t.area>0?parseFloat((kg/t.area).toFixed(2)):''];})]),px+'Resumo');
+}
+function exportFarm(mode){
+  const wb=XLSX.utils.book_new();
+  if(mode==='current'){const farm=db.farms.find(f=>f.id===CFid);if(!farm){showToast('⚠️ Nenhuma fazenda selecionada','error');return;}buildSheets(wb,farm);XLSX.writeFile(wb,`MIMC_${farm.fazenda.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.xlsx`);}
+  else{const farms=visFarms();if(!farms.length){showToast('⚠️ Sem fazendas','error');return;}farms.forEach(f=>buildSheets(wb,f));XLSX.writeFile(wb,`MIMC_Todas_${new Date().toISOString().slice(0,10)}.xlsx`);}
+  showToast('📥 Excel exportado!','success');
+}
+function renderExpSummary(){
+  const farms=visFarms(),tals=db.talhoes.filter(t=>farms.find(f=>f.id===t.farmId));
+  const recs=db.receitas.filter(r=>farms.find(f=>f.id===r.farmId)),desps=db.despesas.filter(d=>farms.find(f=>f.id===d.farmId));
+  const tR=recs.reduce((s,r)=>s+r.renda,0),tD=desps.reduce((s,d)=>s+d.valor,0);
+  document.getElementById('expSummary').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:.55rem;font-size:.83rem"><div style="background:var(--cream);padding:.55rem;border-radius:8px"><b>${farms.length}</b> Fazendas</div><div style="background:var(--cream);padding:.55rem;border-radius:8px"><b>${tals.length}</b> Talhões</div><div style="background:#e8f5e9;padding:.55rem;border-radius:8px;color:var(--success)"><b>${fBRL(tR)}</b></div><div style="background:#fdecea;padding:.55rem;border-radius:8px;color:var(--danger)"><b>${fBRL(tD)}</b></div></div>`;
+}
+
+// ═══════════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════════
+function renderAdmin(){
+  const ul=document.getElementById('adminUserList');
+  ul.innerHTML=users.map(u=>{
+    const farms=db.farms.filter(f=>f.ownerId===u.id);
+    const badge=u.firstAccess?`<span class="badge badge-pending">Aguardando 1º acesso</span>`:`<span class="badge badge-active">Ativo</span>`;
+    return `<div class="user-row">
+      <div style="font-size:1.5rem">${u.role==='admin'?'👑':'👤'}</div>
+      <div style="flex:1"><div class="user-row-name">${u.name}${u.role==='admin'?'<span class="badge badge-admin">ADMIN</span>':''}</div><div class="user-row-detail">${u.id} · ${farms.length} fazenda(s) ${badge}</div></div>
+      <div style="display:flex;gap:.35rem">
+        ${u.role!=='admin'?`<button class="btn btn-secondary btn-sm" onclick="renameUser('${u.id}')">✏️ Nome</button>`:''}
+        <button class="btn btn-secondary btn-sm" onclick="openResetPwd('${u.id}')">🔑</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  const cons=users.filter(u=>u.role==='consultor');
+  document.getElementById('adminSummary').innerHTML=`<div class="scroll-x"><table><thead><tr><th>Consultor</th><th>Fazendas</th><th>Talhões</th><th>Receitas</th><th>Despesas</th><th>Saldo</th></tr></thead><tbody>${cons.map(u=>{
+    const fs=db.farms.filter(f=>f.ownerId===u.id),ts=db.talhoes.filter(t=>fs.find(f=>f.id===t.farmId));
+    const rs=db.receitas.filter(r=>fs.find(f=>f.id===r.farmId)),ds=db.despesas.filter(d=>fs.find(f=>f.id===d.farmId));
+    const tR=rs.reduce((s,r)=>s+r.renda,0),tD=ds.reduce((s,d)=>s+d.valor,0);
+    return `<tr><td>${u.name}</td><td>${fs.length}</td><td>${ts.length}</td><td class="text-green">${fBRL(tR)}</td><td class="text-red">${fBRL(tD)}</td><td class="${tR-tD>=0?'text-green':'text-red'}">${fBRL(tR-tD)}</td></tr>`;
+  }).join('')}</tbody></table></div>`;
+}
+function renameUser(id){
+  const u=users.find(x=>x.id===id);if(!u)return;
+  const n=prompt(`Novo nome para "${u.name}":`,u.name);
+  if(!n||!n.trim())return;
+  u.name=n.trim();saveUsers(users);renderAdmin();renderChips();showToast('✅ Nome atualizado!','success');
+}
+function openResetPwd(id){
+  const u=users.find(x=>x.id===id);if(!u)return;
+  document.getElementById('rstLabel').value=u.name;document.getElementById('rstUid').value=id;
+  document.getElementById('rstPwd1').value='';document.getElementById('rstPwd2').value='';document.getElementById('rstErr').textContent='';
+  openModal('modalResetPwd');
+}
+function doResetPwd(){
+  const id=document.getElementById('rstUid').value,p1=document.getElementById('rstPwd1').value,p2=document.getElementById('rstPwd2').value,err=document.getElementById('rstErr');
+  if(p1.length<6){err.textContent='Mínimo 6 caracteres.';return;}
+  if(p1!==p2){err.textContent='As senhas não coincidem.';return;}
+  const u=users.find(x=>x.id===id);u.pwdHash=sh(p1);u.firstAccess=false;saveUsers(users);closeModal('modalResetPwd');renderAdmin();showToast('✅ Senha redefinida!','success');
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+renderChips();showScreen('screenLogin');
+</script>
+</body>
+</html>
